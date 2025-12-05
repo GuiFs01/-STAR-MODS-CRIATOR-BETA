@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Mods Criator BETA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f7f7f7;
+            --panel: #e0c9a6;
+            --panel-dark: #d4b98a;
+            --text: #8b4513;
+            --text-muted: #a67c52;
+            --accent: #556b2f;
+            --accent-hover: #6b8c42;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --border: #c4a87a;
+            --shadow: rgba(139, 69, 19, 0.2);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html, body {
+            height: 100%;
+            font-family: 'Inter', system-ui, Arial;
+            color: var(--text);
+            background: linear-gradient(135deg, #0c1445 0%, #000000 100%);
+            touch-action: manipulation;
+            overflow-x: hidden;
+        }
+        
+        .app {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        header {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 3px solid var(--border);
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .creator-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .creator-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.1);
+        }
+        
+        .creator-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .creator-modal.active {
+            display: flex;
+        }
+        
+        .creator-content {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 3px solid var(--border);
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+        
+        .creator-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
+            transition: transform 0.2s ease;
+        }
+        
+        .creator-close:hover {
+            transform: scale(1.2);
+        }
+        
+        .creator-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .creator-title {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .creator-description {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .creator-link {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .creator-link:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .sidebar {
+            flex: 1;
+            min-width: 250px;
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 3px solid var(--border);
+        }
+        
+        .main {
+            flex: 2;
+            min-width: 300px;
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 3px solid var(--border);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            background: linear-gradient(to bottom, #f5f5f5, #e8e8e8);
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            text-align: center;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 2px var(--shadow);
+        }
+        
+        .btn.primary {
+            background: linear-gradient(to bottom, var(--accent), var(--accent-hover));
+            color: white;
+            border-color: #445522;
+        }
+        
+        .btn.success {
+            background: linear-gradient(to bottom, var(--success), #45a049);
+            color: white;
+            border-color: #3d8b40;
+        }
+        
+        .btn.danger {
+            background: linear-gradient(to bottom, var(--danger), #da190b);
+            color: white;
+            border-color: #c62828;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            color: var(--text);
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .panel-block {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border: 2px solid var(--border);
+        }
+        
+        .slot {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px dashed var(--border);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slot:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: var(--accent);
+        }
+        
+        .slot img {
+            max-width: 100%;
+            max-height: 80px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        
+        .info-box {
+            background: rgba(85, 107, 47, 0.1);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        
+        .stats-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+            border: 2px solid var(--border);
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .mods-list {
+            margin-top: 20px;
+        }
+        
+        .mod-entry {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid var(--border);
+        }
+        
+        .mod-entry .mod-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .mod-entry .mod-name {
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .mod-entry .mod-details {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .mod-entry .mod-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.danger {
+            background: var(--danger);
+        }
+        
+        .scene {
+            display: none;
+        }
+        
+        .scene.active {
+            display: block;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .validation-error {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            display: none;
+        }
+        
+        .validation-error.show {
+            display: block;
+        }
+        
+        .image-size-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        .shops-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .shop-option {
+            position: relative;
+        }
+        
+        .shop-checkbox {
+            display: none;
+        }
+        
+        .shop-label {
+            display: block;
+            padding: 12px 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .shop-checkbox:checked + .shop-label {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: scale(0.98);
+        }
+        
+        .shop-label:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: var(--accent);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .credits-section {
+            background: rgba(85, 107, 47, 0.1);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .credits-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .credits-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        
+        .credits-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .credits-link:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 600px) {
+            .app {
+                margin: 10px auto;
+                padding: 8px;
+            }
+            
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar, .main {
+                padding: 15px;
+                width: 100%;
+            }
+            
+            .btn {
+                min-height: 48px;
+                padding: 16px 12px;
+                font-size: 16px;
+            }
+            
+            input, select, textarea {
+                font-size: 16px;
+                padding: 14px 10px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .shops-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .creator-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin: 10px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <button class="creator-btn" id="creatorInfoBtn">ℹ️</button>
+            <h1>🎮 STAR MODS CRIATOR BETA</h1>
+            <p class="subtitle">Criador Simplificado de Itens para Stardew Valley</p>
+        </header>
+        
+        <div class="content">
+            <aside class="sidebar">
+                <div class="stats-box" id="projectStats">0 Itens Criados</div>
+                
+                <button class="btn primary" id="btn-create-item">🎁 Criar Item</button>
+                <button class="btn primary" id="btn-create-food">🍲 Criar Comida</button>
+                <button class="btn success" id="btn-export">📦 Exportar Mod</button>
+                
+                <div class="mods-list">
+                    <h3 style="font-size: 14px; margin-bottom: 12px; text-align: center;">📂 Itens Criados</h3>
+                    <div id="savedModsContainer">
+                        <div class="empty-state">
+                            <div class="icon">📝</div>
+                            <p>Nenhum item criado ainda</p>
+                            <p class="small">Clique em "Criar Item" ou "Criar Comida" para começar</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <main class="main">
+                <div id="scene-item" class="scene">
+                    <h2>🎁 <span id="itemSceneTitle">Criar Novo Item</span></h2>
+                    
+                    <div class="tab-navigation">
+                        <button class="tab-btn active" data-tab="basic">📝 Básico</button>
+                        <button class="tab-btn" data-tab="placement">🏠 Colocação</button>
+                        <button class="tab-btn" data-tab="gifts">🎁 Reações NPC</button>
+                        <button class="tab-btn" data-tab="shops">🛒 Lojas</button>
+                    </div>
+                    
+                    <div id="tab-basic" class="tab-content active">
+                        <div class="panel-block">
+                            <h3>📝 Informações Básicas</h3>
+                            <label>📛 Nome do Item *</label>
+                            <input type="text" id="itemName" placeholder="Ex: Espada Lendária" />
+                            <div class="validation-error" id="itemNameError">Nome é obrigatório</div>
+                            
+                            <div class="form-grid">
+                                <div>
+                                    <label>💰 Valor de Venda (ouro)</label>
+                                    <input type="number" id="itemValue" value="100" min="0" />
+                                    <div class="validation-error" id="itemValueError">Valor deve ser maior que 0</div>
+                                </div>
+                                <div>
+                                    <label>📦 Categoria</label>
+                                    <select id="itemCategory">
+                                        <option value="-99">📦 Básico (Miscelânea)</option>
+                                        <option value="-300">🗑️ Lixo (Item Inútil)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div>
+                                    <label>🛒 Preço nas Lojas (ouro)</label>
+                                    <input type="number" id="itemShopPrice" value="200" min="0" />
+                                    <div class="validation-error" id="itemShopPriceError">Preço deve ser maior que 0</div>
+                                </div>
+                            </div>
+                            
+                            <label>📝 Descrição</label>
+                            <textarea id="itemDescription" placeholder="Ex: Uma espada forjada pelos deuses..."></textarea>
+                        </div>
+                        
+                        <div class="panel-block">
+                            <h3>🎨 Sprite (16x16 pixels)</h3>
+                            <div class="file-input-wrapper">
+                                <div class="slot" id="itemSpriteSlot">
+                                    <div class="muted small">Clique para enviar um PNG (16x16)</div>
+                                </div>
+                                <input type="file" id="itemFileInput" accept="image/png, image/jpeg, image/gif" />
+                            </div>
+                            <button class="btn" id="itemSpriteBtn" type="button">📁 Carregar Sprite</button>
+                            <div class="validation-error" id="itemSpriteError">Sprite é obrigatório</div>
+                            <div class="image-size-info">Recomendado: 16x16 pixels para melhor compatibilidade</div>
+                        </div>
+                    </div>
+                    
+                    <div id="tab-placement" class="tab-content">
+                        <div class="panel-block">
+                            <h3>🏠 Colocação no Chão</h3>
+                            
+                            <div class="form-grid">
+                                <div>
+                                    <label>📍 Pode ser colocado no chão?</label>
+                                    <select id="canBePlaced">
+                                        <option value="no">❌ Não</option>
+                                        <option value="yes">✅ Sim</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="breakToolSection" class="panel-block" style="display: none; margin-top: 12px;">
+                                <h4>⚒️ Ferramenta para Quebrar</h4>
+                                <div class="form-grid">
+                                    <div>
+                                        <label>🛠️ Tipo de Ferramenta</label>
+                                        <select id="breakToolType">
+                                            <option value="axe">🪓 Machado</option>
+                                            <option value="pickaxe">⛏️ Picareta</option>
+                                            <option value="hoe">🪣 Enxada</option>
+                                            <option value="water">💧 Balde de Água</option>
+                                            <option value="any">🔧 Qualquer Ferramenta</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label>⭐ Nível Mínimo</label>
+                                        <select id="breakToolLevel">
+                                            <option value="0">🌱 Básico</option>
+                                            <option value="1">🥉 Bronze</option>
+                                            <option value="2">🥈 Prata</option>
+                                            <option value="3">🥇 Ouro</option>
+                                            <option value="4">💎 Iridium</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="tab-gifts" class="tab-content">
+                        <div class="panel-block">
+                            <h3>🎁 Reações dos NPCs ao Presente</h3>
+                            
+                            <div class="form-grid">
+                                <div>
+                                    <label>😊 Reação Padrão</label>
+                                    <select id="giftReaction">
+                                        <option value="love">💖 Amar (+80 pontos)</option>
+                                        <option value="like">👍 Gostar (+45 pontos)</option>
+                                        <option value="neutral">😐 Neutro (+20 pontos)</option>
+                                        <option value="dislike">👎 Não Gostar (-20 pontos)</option>
+                                        <option value="hate">💔 Odiar (-40 pontos)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="info-box">
+                                <strong>💡 Dica:</strong> A maioria dos NPCs terá esta reação ao receber o item como presente.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="tab-shops" class="tab-content">
+                        <div class="panel-block">
+                            <h3>🛒 Onde Pode Ser Comprado</h3>
+                            
+                            <label>Selecione as lojas:</label>
+                            <div class="shops-grid" id="itemShopsContainer">
+                                <!-- As lojas serão preenchidas via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; gap:12px; margin-top:20px;">
+                        <button class="btn primary" id="saveItem">💾 <span id="saveItemText">Salvar Item</span></button>
+                        <button class="btn" id="cancelItem">❌ Cancelar</button>
+                    </div>
+                </div>
+                
+                <div id="scene-food" class="scene">
+                    <h2>🍲 <span id="foodSceneTitle">Criar Nova Comida</span></h2>
+                    
+                    <div class="tab-navigation">
+                        <button class="tab-btn active" data-tab="basic">📝 Básico</button>
+                        <button class="tab-btn" data-tab="stats">⚡ Atributos</button>
+                        <button class="tab-btn" data-tab="gifts">🎁 Reações NPC</button>
+                        <button class="tab-btn" data-tab="shops">🛒 Lojas</button>
+                    </div>
+                    
+                    <div id="tab-food-basic" class="tab-content active">
+                        <div class="panel-block">
+                            <h3>📝 Informações Básicas</h3>
+                            <label>📛 Nome da Comida *</label>
+                            <input type="text" id="foodName" placeholder="Ex: Torta de Mirtilo" />
+                            <div class="validation-error" id="foodNameError">Nome é obrigatório</div>
+                            
+                            <div class="form-grid">
+                                <div>
+                                    <label>💰 Valor de Venda (ouro)</label>
+                                    <input type="number" id="foodValue" value="100" min="0" />
+                                    <div class="validation-error" id="foodValueError">Valor deve ser maior que 0</div>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div>
+                                    <label>🛒 Preço nas Lojas (ouro)</label>
+                                    <input type="number" id="foodShopPrice" value="200" min="0" />
+                                    <div class="validation-error" id="foodShopPriceError">Preço deve ser maior que 0</div>
+                                </div>
+                            </div>
+                            
+                            <label>📝 Descrição</label>
+                            <textarea id="foodDescription" placeholder="Ex: Uma torta deliciosa feita com mirtilos frescos..."></textarea>
+                        </div>
+                        
+                        <div class="panel-block">
+                            <h3>🎨 Sprite (16x16 pixels)</h3>
+                            <div class="file-input-wrapper">
+                                <div class="slot" id="foodSpriteSlot">
+                                    <div class="muted small">Clique para enviar um PNG (16x16)</div>
+                                </div>
+                                <input type="file" id="foodFileInput" accept="image/png, image/jpeg, image/gif" />
+                            </div>
+                            <button class="btn" id="foodSpriteBtn" type="button">📁 Carregar Sprite</button>
+                            <div class="validation-error" id="foodSpriteError">Sprite é obrigatório</div>
+                            <div class="image-size-info">Recomendado: 16x16 pixels para melhor compatibilidade</div>
+                        </div>
+                    </div>
+                    
+                    <div id="tab-food-stats" class="tab-content">
+                        <div class="panel-block">
+                            <h3>⚡ Atributos da Comida</h3>
+                            <div class="form-grid">
+                                <div>
+                                    <label>💪 Energia</label>
+                                    <input type="number" id="foodEnergy" value="50" min="0" />
+                                </div>
+                                <div>
+                                    <label>❤️ Vida</label>
+                                    <input type="number" id="foodHealth" value="25" min="0" />
+                                </div>
+                            </div>
+                            
+                            <div class="info-box">
+                                <strong>💡 Dica:</strong> A energia e vida são restauradas quando o jogador consome a comida.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="tab-food-gifts" class="tab-content">
+                        <div class="panel-block">
+                            <h3>🎁 Reações dos NPCs ao Presente</h3>
+                            
+                            <div class="form-grid">
+                                <div>
+                                    <label>😊 Reação Padrão</label>
+                                    <select id="foodGiftReaction">
+                                        <option value="love">💖 Amar (+80 pontos)</option>
+                                        <option value="like">👍 Gostar (+45 pontos)</option>
+                                        <option value="neutral">😐 Neutro (+20 pontos)</option>
+                                        <option value="dislike">👎 Não Gostar (-20 pontos)</option>
+                                        <option value="hate">💔 Odiar (-40 pontos)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="info-box">
+                                <strong>💡 Dica:</strong> A maioria dos NPCs terá esta reação ao receber a comida como presente.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="tab-food-shops" class="tab-content">
+                        <div class="panel-block">
+                            <h3>🛒 Onde Pode Ser Comprado</h3>
+                            
+                            <label>Selecione as lojas:</label>
+                            <div class="shops-grid" id="foodShopsContainer">
+                                <!-- As lojas serão preenchidas via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; gap:12px; margin-top:20px;">
+                        <button class="btn primary" id="saveFood">💾 <span id="saveFoodText">Salvar Comida</span></button>
+                        <button class="btn" id="cancelFood">❌ Cancelar</button>
+                    </div>
+                </div>
+                
+                <div id="scene-export" class="scene">
+                    <h2>📦 Exportar Mod</h2>
+                    
+                    <div class="panel-block">
+                        <h3>📋 Metadados do Mod</h3>
+                        <div class="form-grid">
+                            <div><label>📛 Nome do Mod *</label><input id="modName" type="text" value="Meu Mod Stardew" /></div>
+                            <div><label>👤 Autor *</label><input id="modAuthor" type="text" value="Seu Nome" /></div>
+                        </div>
+                        
+                        <div class="info-box">
+                            <strong>🎯 Mod para Stardew Valley 1.6+</strong>
+                            <div class="small muted" style="margin-top: 8px;">
+                                Este mod será gerado para o Content Patcher e não modificará nenhum arquivo original do jogo.
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top:12px; display:flex; gap:12px; flex-wrap:wrap">
+                            <button class="btn success" id="exportMod">📥 Exportar Mod ZIP</button>
+                            <button class="btn danger" id="clearAll">🗑️ Limpar Projeto</button>
+                        </div>
+                        
+                        <div class="credits-section">
+                            <div class="credits-title">🎉 Créditos Automáticos</div>
+                            <div class="credits-text">
+                                Todos os mods exportados incluirão automaticamente créditos ao 
+                                <a href="https://beacons.ai/pixelganimation" target="_blank" class="credits-link">Star Mods Criator BETA</a>. 
+                                Isso ajuda a promover a ferramenta e permite que outros criadores também possam criar seus próprios mods!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="scene-home" class="scene active">
+                    <div class="empty-state">
+                        <div class="icon">🎮</div>
+                        <h2>Bem-vindo ao Star Mods Criator BETA!</h2>
+                        <p style="margin: 20px 0;">Crie itens e comidas personalizadas para Stardew Valley</p>
+                        <p class="small">Selecione uma opção no menu lateral para começar</p>
+                        
+                        <div class="credits-section" style="margin-top: 30px;">
+                            <div class="credits-title">✨ Sobre este Projeto</div>
+                            <div class="credits-text">
+                                Desenvolvido por <a href="https://beacons.ai/pixelganimation" target="_blank" class="credits-link">Pixel G Animation</a>. 
+                                Todos os mods criados incluirão automaticamente créditos a esta ferramenta, 
+                                ajudando a comunidade a crescer e permitindo que mais pessoas descubram como criar seus próprios mods!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de informações do criador -->
+    <div id="creatorModal" class="creator-modal">
+        <div class="creator-content">
+            <button class="creator-close" id="creatorCloseBtn">&times;</button>
+            <div class="creator-logo">👨‍💻</div>
+            <h2 class="creator-title">Sobre o Criador</h2>
+            <p class="creator-description">
+                Este projeto foi desenvolvido por <strong>Pixel G Animation</strong>, 
+                um criador apaixonado por Stardew Valley e desenvolvimento de mods.
+            </p>
+            <p class="creator-description">
+                Confira mais projetos, tutoriais e conteúdos sobre desenvolvimento de jogos 
+                e criação de mods nos links abaixo:
+            </p>
+            <a href="https://beacons.ai/pixelganimation" target="_blank" class="creator-link">
+                🌐 Visitar Pixel G Animation
+            </a>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div id="loadingMessage">Gerando arquivo ZIP...</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script>
+        const SHOP_OPTIONS = {
+            "Pierre": "Loja do Pierre (Geral)",
+            "Blacksmith": "Ferreiro (Clint)",
+            "FishShop": "Loja de Peixe (Willy)",
+            "SeedShop": "Loja do Pierre (Sementes)",
+            "AnimalShop": "Rancho da Marnie",
+            "AdventureGuild": "Guilda dos Aventureiros",
+            "Saloon": "Saloon Fruta Estrela",
+            "QiShop": "Loja do Qi (Ilha Gengibre)",
+            "TravelingMerchant": "Mercadora Viajante",
+            "Carpenter": "Carpinteira (Robin)"
+        };
+
+        const App = {
+            project: {
+                meta: { name: 'MeuModStardew', author: 'Autor' },
+                items: [],
+                foods: []
+            },
+            currentFiles: {
+                item: null,
+                food: null
+            },
+            currentType: null,
+            editingId: null,
+            
+            init() {
+                this.loadProject();
+                this.addEventListeners();
+                this.setupShopOptions();
+                this.updateUI();
+                this.showNotification('🎉 Bem-vindo ao STAR MODS CRIATOR BETA!', 'success');
+            },
+            
+            slugify(text) {
+                return text.toString().toLowerCase()
+                    .replace(/\s+/g, '_')
+                    .replace(/[^\w\-]+/g, '')
+                    .replace(/\-\-+/g, '_')
+                    .replace(/^-+/, '')
+                    .replace(/-+$/, '');
+            },
+            
+            showNotification(message, type = 'success') {
+                const notif = document.getElementById('notification');
+                notif.textContent = message;
+                notif.className = `notification show ${type}`;
+                setTimeout(() => {
+                    notif.className = 'notification';
+                }, 3000);
+            },
+
+            showLoading(message) {
+                document.getElementById('loadingMessage').textContent = message;
+                document.getElementById('loadingOverlay').style.display = 'flex';
+            },
+
+            hideLoading() {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            },
+
+            showScene(sceneId) {
+                document.querySelectorAll('.scene').forEach(scene => {
+                    scene.classList.remove('active');
+                });
+                const sceneElement = document.getElementById(`scene-${sceneId}`);
+                if (sceneElement) {
+                    sceneElement.classList.add('active');
+                }
+                this.currentType = (sceneId === 'item' || sceneId === 'food') ? sceneId : null;
+                if (sceneId === 'item' || sceneId === 'food') {
+                    const tabPrefix = sceneId === 'food' ? 'food-' : '';
+                    this.switchTab('basic', `scene-${sceneId}`);
+                }
+            },
+            
+            switchTab(tabId, sceneId) {
+                const sceneElement = document.getElementById(sceneId);
+                if (!sceneElement) return;
+
+                sceneElement.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                sceneElement.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                const tabPrefix = sceneId === 'scene-food' ? 'food-' : '';
+                const targetButton = sceneElement.querySelector(`[data-tab="${tabId}"]`);
+                const targetContent = document.getElementById(`tab-${tabPrefix}${tabId}`);
+
+                if (targetButton) targetButton.classList.add('active');
+                if (targetContent) targetContent.classList.add('active');
+            },
+
+            addEventListeners() {
+                // Botão de informações do criador
+                document.getElementById('creatorInfoBtn').addEventListener('click', () => {
+                    document.getElementById('creatorModal').classList.add('active');
+                });
+                
+                document.getElementById('creatorCloseBtn').addEventListener('click', () => {
+                    document.getElementById('creatorModal').classList.remove('active');
+                });
+                
+                // Fechar modal ao clicar fora
+                document.getElementById('creatorModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('creatorModal')) {
+                        document.getElementById('creatorModal').classList.remove('active');
+                    }
+                });
+
+                document.getElementById('btn-create-item').addEventListener('click', () => {
+                    this.editingId = null;
+                    this.resetForm('item');
+                    document.getElementById('itemSceneTitle').textContent = 'Criar Novo Item';
+                    document.getElementById('saveItemText').textContent = 'Salvar Item';
+                    this.showScene('item');
+                });
+                
+                document.getElementById('btn-create-food').addEventListener('click', () => {
+                    this.editingId = null;
+                    this.resetForm('food');
+                    document.getElementById('foodSceneTitle').textContent = 'Criar Nova Comida';
+                    document.getElementById('saveFoodText').textContent = 'Salvar Comida';
+                    this.showScene('food');
+                });
+                
+                document.getElementById('btn-export').addEventListener('click', () => this.showScene('export'));
+                
+                document.getElementById('itemSpriteSlot').addEventListener('click', () => document.getElementById('itemFileInput').click());
+                document.getElementById('itemSpriteBtn').addEventListener('click', () => document.getElementById('itemFileInput').click());
+                document.getElementById('foodSpriteSlot').addEventListener('click', () => document.getElementById('foodFileInput').click());
+                document.getElementById('foodSpriteBtn').addEventListener('click', () => document.getElementById('foodFileInput').click());
+                
+                document.getElementById('itemFileInput').addEventListener('change', (e) => this.handleFileSelect(e, 'item'));
+                document.getElementById('foodFileInput').addEventListener('change', (e) => this.handleFileSelect(e, 'food'));
+                
+                document.getElementById('saveItem').addEventListener('click', () => this.saveItem());
+                document.getElementById('cancelItem').addEventListener('click', () => this.showScene('home'));
+                document.getElementById('saveFood').addEventListener('click', () => this.saveFood());
+                document.getElementById('cancelFood').addEventListener('click', () => this.showScene('home'));
+                
+                document.getElementById('exportMod').addEventListener('click', () => this.exportMod());
+                document.getElementById('clearAll').addEventListener('click', () => {
+                    if (confirm('Tem certeza que deseja limpar todo o projeto?')) {
+                        this.clearProject();
+                        this.showScene('home');
+                        this.showNotification('🗑️ Projeto limpo.', 'danger');
+                    }
+                });
+                
+                document.getElementById('modName').addEventListener('input', (e) => {
+                    this.project.meta.name = e.target.value;
+                    this.saveProject();
+                });
+                document.getElementById('modAuthor').addEventListener('input', (e) => {
+                    this.project.meta.author = e.target.value;
+                    this.saveProject();
+                });
+                
+                document.querySelectorAll('.tab-btn').forEach(button => {
+                    button.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab, button.closest('.scene').id));
+                });
+                
+                document.getElementById('canBePlaced').addEventListener('change', (e) => {
+                    const section = document.getElementById('breakToolSection');
+                    section.style.display = e.target.value === 'yes' ? 'block' : 'none';
+                });
+            },
+
+            setupShopOptions() {
+                const itemContainer = document.getElementById('itemShopsContainer');
+                const foodContainer = document.getElementById('foodShopsContainer');
+                itemContainer.innerHTML = '';
+                foodContainer.innerHTML = '';
+
+                Object.entries(SHOP_OPTIONS).forEach(([key, name]) => {
+                    itemContainer.innerHTML += `
+                        <div class="shop-option">
+                            <input type="checkbox" id="item-shop-${key}" class="shop-checkbox" value="${key}" />
+                            <label for="item-shop-${key}" class="shop-label">${name}</label>
+                        </div>
+                    `;
+
+                    foodContainer.innerHTML += `
+                        <div class="shop-option">
+                            <input type="checkbox" id="food-shop-${key}" class="shop-checkbox" value="${key}" />
+                            <label for="food-shop-${key}" class="shop-label">${name}</label>
+                        </div>
+                    `;
+                });
+            },
+
+            handleFileSelect(event, type) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    this.showNotification('O arquivo deve ser uma imagem.', 'danger');
+                    return;
+                }
+
+                this.currentFiles[type] = file;
+                const slot = document.getElementById(`${type}SpriteSlot`);
+                slot.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Sprite Preview" />`;
+                
+                this.showNotification(`✅ Sprite carregado com sucesso!`, 'success');
+            },
+
+            getFormData(type) {
+                const data = {};
+                if (type === 'item') {
+                    data.name = document.getElementById('itemName').value.trim();
+                    data.value = parseInt(document.getElementById('itemValue').value) || 0;
+                    data.shopPrice = parseInt(document.getElementById('itemShopPrice').value) || 0;
+                    data.category = parseInt(document.getElementById('itemCategory').value);
+                    data.description = document.getElementById('itemDescription').value.trim();
+                    data.giftReaction = document.getElementById('giftReaction').value;
+                    data.canBePlaced = document.getElementById('canBePlaced').value === 'yes';
+                    data.breakToolType = data.canBePlaced ? document.getElementById('breakToolType').value : 'none';
+                    data.breakToolLevel = data.canBePlaced ? parseInt(document.getElementById('breakToolLevel').value) : 0;
+                    data.file = this.currentFiles.item;
+                    data.type = 'item';
+                    
+                    const selectedShops = Array.from(
+                        document.querySelectorAll(`#itemShopsContainer input[type="checkbox"]:checked`)
+                    ).map(input => input.value);
+                    data.shops = selectedShops;
+                
+                } else if (type === 'food') {
+                    data.name = document.getElementById('foodName').value.trim();
+                    data.foodValue = parseInt(document.getElementById('foodValue').value) || 0;
+                    data.foodShopPrice = parseInt(document.getElementById('foodShopPrice').value) || 0;
+                    data.description = document.getElementById('foodDescription').value.trim();
+                    data.foodEnergy = parseInt(document.getElementById('foodEnergy').value) || 0;
+                    data.foodHealth = parseInt(document.getElementById('foodHealth').value) || 0;
+                    data.giftReaction = document.getElementById('foodGiftReaction').value;
+                    data.file = this.currentFiles.food;
+                    data.type = 'food';
+
+                    const selectedShops = Array.from(
+                        document.querySelectorAll(`#foodShopsContainer input[type="checkbox"]:checked`)
+                    ).map(input => input.value);
+                    data.shops = selectedShops;
+                }
+
+                if (this.editingId) {
+                    data.id = this.editingId;
+                } else {
+                    data.id = `${this.slugify(this.project.meta.author)}_${this.slugify(data.name)}_${Date.now()}`;
+                }
+
+                return data;
+            },
+
+            validateForm(data, type) {
+                let isValid = true;
+
+                const nameField = type === 'item' ? 'itemName' : 'foodName';
+                const spriteErrorField = type === 'item' ? 'itemSpriteError' : 'foodSpriteError';
+                const shopPriceField = type === 'item' ? 'itemShopPrice' : 'foodShopPrice';
+                
+                document.getElementById(nameField).classList.remove('validation-error');
+                document.getElementById(`${nameField}Error`).classList.remove('show');
+                if (!data.name) {
+                    document.getElementById(nameField).classList.add('validation-error');
+                    document.getElementById(`${nameField}Error`).classList.add('show');
+                    isValid = false;
+                }
+
+                document.getElementById(spriteErrorField).classList.remove('show');
+                if (!data.file) {
+                    document.getElementById(spriteErrorField).classList.add('show');
+                    isValid = false;
+                }
+
+                // Validar preço nas lojas
+                document.getElementById(shopPriceField).classList.remove('validation-error');
+                document.getElementById(`${shopPriceField}Error`).classList.remove('show');
+                const shopPrice = type === 'item' ? data.shopPrice : data.foodShopPrice;
+                if (shopPrice <= 0) {
+                    document.getElementById(shopPriceField).classList.add('validation-error');
+                    document.getElementById(`${shopPriceField}Error`).classList.add('show');
+                    isValid = false;
+                }
+                
+                return isValid;
+            },
+
+            resetForm(type) {
+                const prefix = type === 'food' ? 'food' : 'item';
+                document.getElementById(`${prefix}Name`).value = '';
+                document.getElementById(`${prefix}Description`).value = '';
+                document.getElementById(`${prefix}SpriteSlot`).innerHTML = '<div class="muted small">Clique para enviar um PNG (16x16)</div>';
+                this.currentFiles[type] = null;
+                
+                if (type === 'item') {
+                    document.getElementById('itemValue').value = 100;
+                    document.getElementById('itemShopPrice').value = 200;
+                    document.getElementById('itemCategory').value = '-99';
+                    document.getElementById('giftReaction').value = 'love';
+                    document.getElementById('canBePlaced').value = 'no';
+                    document.getElementById('breakToolSection').style.display = 'none';
+                    document.querySelectorAll('#itemShopsContainer input[type="checkbox"]').forEach(c => c.checked = false);
+                } else {
+                    document.getElementById('foodValue').value = 100;
+                    document.getElementById('foodShopPrice').value = 200;
+                    document.getElementById('foodEnergy').value = 50;
+                    document.getElementById('foodHealth').value = 25;
+                    document.getElementById('foodGiftReaction').value = 'love';
+                    document.querySelectorAll('#foodShopsContainer input[type="checkbox"]').forEach(c => c.checked = false);
+                }
+
+                document.querySelectorAll('.validation-error').forEach(el => el.classList.remove('show'));
+                document.querySelectorAll('input').forEach(el => el.classList.remove('validation-error'));
+            },
+
+            populateForm(data, type) {
+                this.editingId = data.id;
+                this.currentFiles[type] = data.file;
+                
+                const prefix = type === 'food' ? 'food' : 'item';
+                document.getElementById(`${prefix}SceneTitle`).textContent = `Editar ${data.name}`;
+                document.getElementById(`save${type === 'food' ? 'Food' : 'Item'}Text`).textContent = 'Atualizar Item';
+                document.getElementById(`${prefix}Name`).value = data.name;
+                document.getElementById(`${prefix}Description`).value = data.description;
+                
+                if (data.file) {
+                    document.getElementById(`${prefix}SpriteSlot`).innerHTML = `<img src="${URL.createObjectURL(data.file)}" alt="Sprite Preview" />`;
+                }
+
+                if (type === 'item') {
+                    document.getElementById('itemValue').value = data.value;
+                    document.getElementById('itemShopPrice').value = data.shopPrice || 200;
+                    document.getElementById('itemCategory').value = data.category.toString();
+                    document.getElementById('giftReaction').value = data.giftReaction;
+                    document.getElementById('canBePlaced').value = data.canBePlaced ? 'yes' : 'no';
+                    document.getElementById('breakToolSection').style.display = data.canBePlaced ? 'block' : 'none';
+                    document.getElementById('breakToolType').value = data.breakToolType || 'none';
+                    document.getElementById('breakToolLevel').value = data.breakToolLevel || 0;
+                    document.querySelectorAll('#itemShopsContainer input[type="checkbox"]').forEach(c => {
+                        c.checked = data.shops.includes(c.value);
+                    });
+                } else {
+                    document.getElementById('foodValue').value = data.foodValue;
+                    document.getElementById('foodShopPrice').value = data.foodShopPrice || 200;
+                    document.getElementById('foodEnergy').value = data.foodEnergy;
+                    document.getElementById('foodHealth').value = data.foodHealth;
+                    document.getElementById('foodGiftReaction').value = data.giftReaction;
+                    document.querySelectorAll('#foodShopsContainer input[type="checkbox"]').forEach(c => {
+                        c.checked = data.shops.includes(c.value);
+                    });
+                }
+
+                this.showScene(type);
+            },
+
+            saveItem() {
+                const data = this.getFormData('item');
+                if (!this.validateForm(data, 'item')) {
+                    this.showNotification('❌ Erro: Preencha todos os campos obrigatórios!', 'danger');
+                    return;
+                }
+
+                if (this.editingId) {
+                    const index = this.project.items.findIndex(i => i.id === this.editingId);
+                    if (index !== -1) this.project.items[index] = data;
+                    this.showNotification(`💾 Item "${data.name}" atualizado!`, 'success');
+                } else {
+                    this.project.items.push(data);
+                    this.showNotification(`✨ Item "${data.name}" criado com sucesso!`, 'success');
+                }
+
+                this.editingId = null;
+                this.saveProject();
+                this.updateUI();
+                this.showScene('home');
+            },
+
+            saveFood() {
+                const data = this.getFormData('food');
+                if (!this.validateForm(data, 'food')) {
+                    this.showNotification('❌ Erro: Preencha todos os campos obrigatórios!', 'danger');
+                    return;
+                }
+
+                if (this.editingId) {
+                    const index = this.project.foods.findIndex(f => f.id === this.editingId);
+                    if (index !== -1) this.project.foods[index] = data;
+                    this.showNotification(`💾 Comida "${data.name}" atualizada!`, 'success');
+                } else {
+                    this.project.foods.push(data);
+                    this.showNotification(`✨ Comida "${data.name}" criada com sucesso!`, 'success');
+                }
+
+                this.editingId = null;
+                this.saveProject();
+                this.updateUI();
+                this.showScene('home');
+            },
+
+            getShopPatches(data, itemId) {
+                const shopPatches = [];
+                const shops = data.shops || [];
+                
+                if (shops.length === 0) return shopPatches;
+
+                // Usar preço específico para lojas se definido, senão usar o valor padrão
+                const shopPrice = data.shopPrice || data.foodShopPrice || (data.value || data.foodValue) * 2;
+                
+                const itemEntry = {
+                    "ItemId": itemId,
+                    "Price": shopPrice,
+                    "AvailableStock": -1
+                };
+
+                for (const shopKey of shops) {
+                    shopPatches.push({
+                        "Action": "EditData",
+                        "Target": "Data/Shops",
+                        "TargetField": [ shopKey, "Items" ],
+                        "Entries": {
+                            [itemId]: itemEntry
+                        }
+                    });
+                }
+                
+                return shopPatches;
+            },
+
+            generateContentPatcherConfig() {
+                const uniqueID = `${this.slugify(this.project.meta.author)}.${this.slugify(this.project.meta.name)}`;
+                const changes = [];
+
+                const allItems = [...this.project.items, ...this.project.foods];
+                
+                // 1. Carregar Sprites e Definir Itens (Data/Objects)
+                const objectEntries = {};
+                allItems.forEach(data => {
+                    // Patch de Carregamento de Imagem
+                    changes.push({
+                        "Action": "Load",
+                        "Target": `Mods/${uniqueID}/${data.id}`,
+                         "FromFile": `assets/${data.id}.png`
+                    });
+
+                    let categoryId;
+                    let edibility;
+                    let itemType;
+
+                    if (data.type === 'food') {
+                        categoryId = -7;
+                        edibility = 0;
+                        itemType = 'Cooking';
+                    } else {
+                        categoryId = data.category;
+                        edibility = -300;
+                        itemType = data.canBePlaced ? 'Crafting' : 'Basic';
+                    }
+
+                    const giftTastesMap = {
+                        love: 'Love',
+                        like: 'Like', 
+                        neutral: 'Neutral',
+                        dislike: 'Dislike',
+                        hate: 'Hate'
+                    };
+                    const giftTasteKey = giftTastesMap[data.giftReaction] || 'Neutral';
+                    
+                    const salePrice = data.value || data.foodValue;
+                    
+                    objectEntries[data.id] = {
+                        "Name": data.name,
+                        "DisplayName": data.name,
+                        "Description": data.description,
+                        "Price": salePrice,
+                        "Edibility": edibility,
+                        "Type": itemType,
+                        "Category": categoryId,
+                         "Texture": `Mods/${uniqueID}/${data.id}`,
+                        "GiftTastes": {
+                            [giftTasteKey]: "Universal"
+                        }
+                     };
+                    
+                    if (data.type === 'item' && data.canBePlaced) {
+                        let breakTool = '';
+                        if (data.breakToolType !== 'any') {
+                            breakTool = `${data.breakToolType} ${data.breakToolLevel}`;
+                        }
+                        objectEntries[data.id].BreakTool = breakTool;
+                    }
+
+                    if (data.type === 'food') {
+                        objectEntries[data.id].BuffDuration = 0;
+                        objectEntries[data.id].Edibility = data.foodEnergy;
+                        objectEntries[data.id].Health = data.foodHealth;
+                    }
+                
+                    changes.push(...this.getShopPatches(data, data.id));
+                });
+                
+                if (Object.keys(objectEntries).length > 0) {
+                    changes.push({
+                        "Action": "EditData",
+                        "Target": "Data/Objects",
+                        "Entries": objectEntries
+                    });
+                }
+
+                return {
+                    "Format": "2.0.0",
+                    "Changes": changes
+                };
+            },
+
+            generateManifest() {
+                const uniqueID = `${this.slugify(this.project.meta.author)}.${this.slugify(this.project.meta.name)}`;
+                return {
+                    "Name": this.project.meta.name,
+                    "Author": this.project.meta.author,
+                    "Version": "1.0.0",
+                    "Description": `Mod criado com Star Mods Criator BETA por Pixel G Animation. Confira mais em: https://beacons.ai/pixelganimation\n\n${this.project.meta.name} adiciona ${this.project.items.length + this.project.foods.length} itens personalizados ao Stardew Valley.`,
+                    "UniqueID": uniqueID,
+                    "ContentPackFor": {
+                        "UniqueID": "Pathoschild.ContentPatcher",
+                        "MinimumVersion": "1.20.0"
+                    },
+                    "UpdateKeys": []
+                };
+            },
+
+            async exportMod() {
+                if (this.project.items.length === 0 && this.project.foods.length === 0) {
+                    this.showNotification('⚠️ Adicione pelo menos um item ou comida para exportar.', 'warning');
+                    return;
+                }
+                
+                this.showLoading('Gerando arquivos do mod...');
+
+                try {
+                    const zip = new JSZip();
+                    const modFolder = zip.folder(this.project.meta.name);
+                    const assetsFolder = modFolder.folder("assets");
+
+                    const manifest = this.generateManifest();
+                    modFolder.file("manifest.json", JSON.stringify(manifest, null, 2));
+
+                    const contentConfig = this.generateContentPatcherConfig();
+                    modFolder.file("content.json", JSON.stringify(contentConfig, null, 2));
+
+                    // Adicionar arquivo README com créditos
+                    const readmeContent = this.generateReadme();
+                    modFolder.file("README.md", readmeContent);
+
+                    const allItems = [...this.project.items, ...this.project.foods];
+                    for (const item of allItems) {
+                        if (item.file) {
+                            assetsFolder.file(`${item.id}.png`, item.file);
+                        }
+                    }
+
+                    const zipContent = await zip.generateAsync({ type: "blob" });
+                    saveAs(zipContent, `${this.slugify(this.project.meta.name)}.zip`);
+
+                    this.showNotification('📦 Mod exportado com sucesso! Procure no seu Downloads.', 'success');
+                } catch (error) {
+                    console.error('Erro durante a exportação do mod:', error);
+                    this.showNotification('❌ Erro na exportação. Verifique o console.', 'danger');
+                } finally {
+                    this.hideLoading();
+                }
+            },
+
+            generateReadme() {
+                return `# ${this.project.meta.name}
+
+Mod criado por **${this.project.meta.author}** usando o **Star Mods Criator BETA**.
+
+## Sobre este Mod
+
+Este mod adiciona ${this.project.items.length + this.project.foods.length} itens personalizados ao Stardew Valley:
+- ${this.project.items.length} itens
+- ${this.project.foods.length} comidas
+
+## Créditos
+
+Este mod foi criado usando o **Star Mods Criator BETA**, uma ferramenta desenvolvida por **Pixel G Animation**.
+
+🔗 **Confira mais projetos:** https://beacons.ai/pixelganimation
+
+## Instalação
+
+1. Extraia este arquivo ZIP na pasta Mods do seu Stardew Valley
+2. Certifique-se de ter o [Content Patcher](https://www.nexusmods.com/stardewvalley/mods/1915) instalado
+3. Inicie o jogo e aproveite!
+
+---
+
+*Se você gostou deste mod, considere criar seus próprios mods usando o Star Mods Criator BETA!*`;
+            },
+
+            saveProject() {
+                try {
+                    localStorage.setItem('starModsProject', JSON.stringify(this.project));
+                } catch (e) {
+                    console.warn('Não foi possível salvar o projeto no localStorage:', e);
+                }
+            },
+
+            loadProject() {
+                const saved = localStorage.getItem('starModsProject');
+                if (saved) {
+                    try {
+                        const loaded = JSON.parse(saved);
+                        Object.assign(this.project, loaded);
+                    } catch (e) {
+                        console.error('Erro ao carregar projeto:', e);
+                    }
+                }
+            },
+
+            clearProject() {
+                this.project.items = [];
+                this.project.foods = [];
+                this.project.meta = { name: 'Meu Mod Stardew', author: 'Autor' };
+                this.currentFiles.item = null;
+                this.currentFiles.food = null;
+                this.editingId = null;
+                this.saveProject();
+                this.updateUI();
+            },
+
+            updateUI() {
+                const totalItems = this.project.items.length + this.project.foods.length;
+                document.getElementById('projectStats').textContent = `${totalItems} Itens Criados`;
+                document.getElementById('modName').value = this.project.meta.name;
+                document.getElementById('modAuthor').value = this.project.meta.author;
+                this.renderModList();
+            },
+
+            renderModList() {
+                const container = document.getElementById('savedModsContainer');
+                const allItems = [...this.project.items, ...this.project.foods];
+                
+                if (allItems.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📝</div>
+                            <p>Nenhum item criado ainda</p>
+                            <p class="small">Clique em "Criar Item" ou "Criar Comida" para começar</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = allItems.map(item => {
+                    let detail;
+                    if (item.type === 'food') {
+                        detail = `Comida | ${item.foodEnergy} Energia`;
+                    } else {
+                        const categoryNames = {
+                            '-99': 'Básico',
+                            '-300': 'Lixo'
+                        };
+                        detail = `Item | ${categoryNames[item.category] || 'Básico'}`;
+                    }
+                    return `
+                        <div class="mod-entry">
+                            <div class="mod-info">
+                                <div class="mod-name">${item.name}</div>
+                                <div class="mod-details">${detail}</div>
+                            </div>
+                            <div class="mod-actions">
+                                <button class="btn primary" style="width: auto; padding: 8px 12px; margin: 0;" onclick="App.editMod('${item.id}', '${item.type}')">✏️ Editar</button>
+                                <button class="btn danger" style="width: auto; padding: 8px 12px; margin: 0;" onclick="App.deleteMod('${item.id}', '${item.type}')">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            editMod(id, type) {
+                const list = type === 'item' ? this.project.items : this.project.foods;
+                const itemData = list.find(i => i.id === id);
+                if (itemData) {
+                    this.resetForm(type);
+                    this.populateForm(itemData, type);
+                }
+            },
+
+            deleteMod(id, type) {
+                if (!confirm(`Tem certeza que deseja deletar este item?`)) return;
+
+                const listKey = type === 'item' ? 'items' : 'foods';
+                const index = this.project[listKey].findIndex(i => i.id === id);
+
+                if (index !== -1) {
+                    this.project[listKey].splice(index, 1);
+                    this.saveProject();
+                    this.updateUI();
+                    this.showNotification('Item deletado.', 'danger');
+                }
+            }
+        };
+
+        App.init();
+    </script>
+</body>
+</html>
